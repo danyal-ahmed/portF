@@ -1,26 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { CreateContactDto } from './dto/create-contact.dto.js';
-import { UpdateContactDto } from './dto/update-contact.dto.js';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Contact, ContactDocument } from './schemas/contact.schema';
+import { CreateContactDto } from './dto/create-contact.dto';
 
 @Injectable()
 export class ContactService {
-  create(createContactDto: CreateContactDto) {
-    return 'This action adds a new contact';
+  constructor(
+    @InjectModel(Contact.name)
+    private readonly contactModel: Model<ContactDocument>,
+  ) {}
+
+  async create(createContactDto: CreateContactDto): Promise<ContactDocument> {
+    const createdContact = new this.contactModel(createContactDto);
+    return createdContact.save();
   }
 
-  findAll() {
-    return `This action returns all contact`;
+  async findAll(): Promise<Contact[]> {
+    return this.contactModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} contact`;
-  }
+  async markAsRead(id: string): Promise<Contact> {
+    const contact = await this.contactModel
+      .findByIdAndUpdate(id, { isRead: true }, { new: true })
+      .exec();
 
-  update(id: number, updateContactDto: UpdateContactDto) {
-    return `This action updates a #${id} contact`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} contact`;
+    if (!contact) {
+      throw new NotFoundException(`Message with ID ${id} not found`);
+    }
+    return contact;
   }
 }

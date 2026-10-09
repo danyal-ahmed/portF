@@ -1,17 +1,21 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ContactModule } from './modules/contact/contact.module'; // <-- 1. Import statement
 
 @Module({
   imports: [
-    // Load .env globally
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-
-    // Connect to remote MongoDB
+    ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 20,
+      },
+    ]),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -19,10 +23,9 @@ import { AuthModule } from './modules/auth/auth.module';
       }),
       inject: [ConfigService],
     }),
-
-    // Feature Modules
     ProjectsModule,
     AuthModule,
+    ContactModule, // <-- 2. Must be in imports array
   ],
 })
 export class AppModule {}
