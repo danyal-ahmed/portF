@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ProjectsService } from './projects.service.js';
-import { ProjectsController } from './projects.controller.js';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ProjectsController } from './projects.controller';
+import { ProjectsService } from './projects.service';
+import { Project, ProjectSchema } from './schemas/project.schema';
 
 @Module({
+  imports: [
+    // Registers the schema so you can use @InjectModel(Project.name) in your service
+    MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
+  ],
   controllers: [ProjectsController],
   providers: [ProjectsService],
 })

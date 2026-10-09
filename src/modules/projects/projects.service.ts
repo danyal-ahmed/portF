@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProjectDto } from './dto/create-project.dto.js';
-import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Project } from './schemas/project.schema';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectsService {
-  create(createProjectDto: CreateProjectDto) {
-    return 'This action adds a new project';
+  constructor(
+    @InjectModel(Project.name) private readonly projectModel: Model<Project>,
+  ) {}
+
+  async create(createProjectDto: CreateProjectDto): Promise<Project> {
+    const newProject = new this.projectModel(createProjectDto);
+    return newProject.save();
   }
 
-  findAll() {
-    return `This action returns all projects`;
+  async findAll(): Promise<Project[]> {
+    return this.projectModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(id: string): Promise<Project> {
+    const project = await this.projectModel.findById(id).exec();
+    if (!project)
+      throw new NotFoundException(`Project with ID ${id} not found`);
+    return project;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto,
+  ): Promise<Project> {
+    const updatedProject = await this.projectModel
+      .findByIdAndUpdate(id, updateProjectDto, { new: true })
+      .exec();
+    if (!updatedProject)
+      throw new NotFoundException(`Project with ID ${id} not found`);
+    return updatedProject;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(id: string): Promise<Project> {
+    const deletedProject = await this.projectModel.findByIdAndDelete(id).exec();
+    if (!deletedProject)
+      throw new NotFoundException(`Project with ID ${id} not found`);
+    return deletedProject;
   }
 }
