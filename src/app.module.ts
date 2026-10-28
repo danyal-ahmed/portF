@@ -5,7 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { ContactModule } from './modules/contact/contact.module'; // <-- 1. Import statement
+import { ContactModule } from './modules/contact/contact.module';
+import { TerminalModule } from './modules/terminal/terminal.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { ContactModule } from './modules/contact/contact.module'; // <-- 1. Impo
     }),
     ProjectsModule,
     AuthModule,
-    ContactModule, // <-- 2. Must be in imports array
+    ContactModule,
+    TerminalModule,
   ],
 })
 export class AppModule {}
