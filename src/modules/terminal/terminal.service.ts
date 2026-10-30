@@ -24,7 +24,7 @@ export class TerminalService {
     try {
       // Use the universally supported base model alias
       const model = this.genAI.getGenerativeModel({
-        model: 'gemini-3.8-flash',
+        model: 'gemini-3.5-flash',
       });
 
       // Manually combine your system context with the user's command
