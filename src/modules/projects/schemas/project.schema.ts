@@ -1,25 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ timestamps: true }) // Automatically generates createdAt and updatedAt
+@Schema({ timestamps: true })
 export class Project extends Document {
-  @Prop({ required: true, trim: true })
-  title: string;
+  @Prop({ required: true })
+  title!: string;
 
   @Prop({ required: true })
-  description: string;
+  description!: string;
 
-  @Prop({ type: [String], default: [] })
-  techStack: string[];
+  @Prop([String])
+  techStack!: string[];
 
-  @Prop({ trim: true })
+  @Prop()
   githubUrl?: string;
 
-  @Prop({ trim: true })
+  @Prop()
   liveUrl?: string;
 
-  @Prop({ default: false })
-  isFeatured: boolean;
+  @Prop()
+  imageUrl?: string;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

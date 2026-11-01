@@ -10,4 +10,9 @@ export class AuthController {
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
+  // Add this endpoint inside your AuthController class
+  @Post('seed')
+  seedAdmin() {
+    return this.authService.seedAdmin();
+  }
 }
