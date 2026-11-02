@@ -2,7 +2,6 @@ import {
   IsString,
   IsNotEmpty,
   IsArray,
-  IsUrl,
   IsOptional,
   IsBoolean,
 } from 'class-validator';
@@ -20,13 +19,20 @@ export class CreateProjectDto {
   @IsString({ each: true })
   techStack: string[];
 
-  @IsUrl()
+  // Changed from @IsUrl() so you can pass text like "Android App"
+  @IsString()
   @IsOptional()
   githubUrl?: string;
 
-  @IsUrl()
+  // Changed from @IsUrl()
+  @IsString()
   @IsOptional()
   liveUrl?: string;
+
+  // Added to accept the image URL from your Angular form
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

@@ -20,6 +20,10 @@ export class Project extends Document {
 
   @Prop()
   imageUrl?: string;
+
+  // Added to match your DTO
+  @Prop({ default: false })
+  isFeatured?: boolean;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

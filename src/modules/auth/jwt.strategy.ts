@@ -15,9 +15,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    if (payload.username !== this.configService.get<string>('ADMIN_USERNAME')) {
-      throw new UnauthorizedException('Invalid user');
+    // 1. Check payload.email instead of payload.username
+    if (!payload.email) {
+      throw new UnauthorizedException('Invalid token payload');
     }
-    return { userId: payload.sub, username: payload.username };
+
+    // 2. Return the email so it gets attached to the Express Request object
+    return { userId: payload.sub, email: payload.email };
   }
 }
