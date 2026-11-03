@@ -1,33 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Contact, ContactDocument } from './schemas/contact.schema';
-import { CreateContactDto } from './dto/create-contact.dto';
+import { Message } from './schemas/message.schema';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
 export class ContactService {
   constructor(
-    @InjectModel(Contact.name)
-    private readonly contactModel: Model<ContactDocument>,
+    @InjectModel(Message.name) private messageModel: Model<Message>,
   ) {}
 
-  async create(createContactDto: CreateContactDto): Promise<ContactDocument> {
-    const createdContact = new this.contactModel(createContactDto);
-    return createdContact.save();
+  async create(createMessageDto: CreateMessageDto): Promise<Message> {
+    const newMessage = new this.messageModel(createMessageDto);
+    return newMessage.save();
   }
 
-  async findAll(): Promise<Contact[]> {
-    return this.contactModel.find().sort({ createdAt: -1 }).exec();
+  // NEW: Fetch all messages, newest first
+  async findAll(): Promise<Message[]> {
+    return this.messageModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  async markAsRead(id: string): Promise<Contact> {
-    const contact = await this.contactModel
-      .findByIdAndUpdate(id, { isRead: true }, { new: true })
+  // NEW: Delete a message
+  async remove(id: string): Promise<void> {
+    const result = await this.messageModel.findByIdAndDelete(id).exec();
+    if (!result) throw new NotFoundException('Message not found');
+  }
+
+  // NEW: Update read status
+  async updateReadStatus(id: string, isRead: boolean): Promise<Message> {
+    const updatedMessage = await this.messageModel
+      .findByIdAndUpdate(id, { isRead }, { new: true })
       .exec();
 
-    if (!contact) {
-      throw new NotFoundException(`Message with ID ${id} not found`);
-    }
-    return contact;
+    if (!updatedMessage) throw new NotFoundException('Message not found');
+    return updatedMessage;
   }
 }

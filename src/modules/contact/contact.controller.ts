@@ -1,47 +1,45 @@
 import {
   Controller,
-  Post,
   Get,
-  Patch,
-  Param,
+  Post,
   Body,
+  Param,
+  Delete,
   UseGuards,
-  HttpCode,
-  HttpStatus,
+  Patch,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { ContactService } from './contact.service';
-import { CreateContactDto } from './dto/create-contact.dto';
+import { CreateMessageDto } from './dto/create-message.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Adjust path if needed
 
 @Controller('contact')
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
-  // Public endpoint: Allow max 3 requests per 60 seconds (60,000 ms)
-  @UseGuards(ThrottlerGuard)
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  // PUBLIC: Anyone can submit a message
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async submitMessage(@Body() createContactDto: CreateContactDto) {
-    const result = await this.contactService.create(createContactDto);
-    return {
-      message: 'Your message has been sent successfully.',
-      id: result._id,
-    };
+  create(@Body() createMessageDto: CreateMessageDto) {
+    return this.contactService.create(createMessageDto);
   }
 
-  // Admin endpoint: Protected by JWT
-  @UseGuards(AuthGuard('jwt'))
+  // PROTECTED: Only Admin can view messages
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async getMessages() {
+  findAll() {
     return this.contactService.findAll();
   }
 
-  // Admin endpoint: Protected by JWT
-  @UseGuards(AuthGuard('jwt'))
+  // PROTECTED: Only Admin can delete messages
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.contactService.remove(id);
+  }
+
+  // PROTECTED: Only Admin can mark as read/unread
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/read')
-  async markRead(@Param('id') id: string) {
-    return this.contactService.markAsRead(id);
+  updateReadStatus(@Param('id') id: string, @Body('isRead') isRead: boolean) {
+    return this.contactService.updateReadStatus(id, isRead);
   }
 }
