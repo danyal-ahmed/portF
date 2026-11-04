@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { HomeContent } from './schemas/home-content.schema';
@@ -21,8 +21,15 @@ export class HomeContentService {
 
   async updateContent(dto: HomeContentDto): Promise<HomeContent> {
     const content = await this.getContent();
-    return this.homeContentModel
-      .findByIdAndUpdate(content._id, dto, { new: true })
+
+    const updatedContent = await this.homeContentModel
+      .findOneAndUpdate({ _id: content._id }, dto, { new: true })
       .exec();
+
+    if (!updatedContent) {
+      throw new NotFoundException('Home content failed to update.');
+    }
+
+    return updatedContent;
   }
 }

@@ -1,22 +1,19 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { IsString, IsNotEmpty } from 'class-validator';
 
-@Schema({ timestamps: true })
-export class HomeContent extends Document {
-  @Prop({ required: true, default: 'Danyal Ahmed' })
+export class HomeContentDto {
+  @IsString()
+  @IsNotEmpty()
   headline!: string;
 
-  @Prop({
-    required: true,
-    default: 'Lead Backend Developer & Full-Stack Engineer',
-  })
+  @IsString()
+  @IsNotEmpty()
   subheadline!: string;
 
-  @Prop({
-    required: true,
-    default: 'Building scalable enterprise SaaS and fintech data pipelines.',
-  })
+  @IsString()
+  @IsNotEmpty()
   description!: string;
-}
 
-export const HomeContentSchema = SchemaFactory.createForClass(HomeContent);
+  @IsString()
+  @IsNotEmpty()
+  availableTo!: string;
+}

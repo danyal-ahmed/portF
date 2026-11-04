@@ -7,6 +7,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
+import { HomeContentModule } from './modules/home-content/home-content.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TerminalModule } from './modules/terminal/terminal.module';
     AuthModule,
     ContactModule,
     TerminalModule,
+    HomeContentModule,
   ],
 })
 export class AppModule {}
