@@ -16,8 +16,17 @@ export class ProjectsService {
     return newProject.save();
   }
 
-  async findAll(): Promise<Project[]> {
-    return this.projectModel.find().exec();
+  // UPDATED: Accepts dynamic sort parameters
+  async findAll(
+    sortBy: string = 'createdAt',
+    order: 'asc' | 'desc' = 'desc',
+  ): Promise<Project[]> {
+    const sortDirection = order === 'asc' ? 1 : -1;
+
+    return this.projectModel
+      .find()
+      .sort({ [sortBy]: sortDirection })
+      .exec();
   }
 
   async findOne(id: string): Promise<Project> {

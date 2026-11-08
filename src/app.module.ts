@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
 import { HomeContentModule } from './modules/home-content/home-content.module';
+import { AboutContentModule } from './modules/about/about.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { HomeContentModule } from './modules/home-content/home-content.module';
     ContactModule,
     TerminalModule,
     HomeContentModule,
+    AboutContentModule,
   ],
 })
 export class AppModule {}
