@@ -1,3 +1,4 @@
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
@@ -6,8 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: [
+      'http://localhost:4200',
+      'https://danyal-ahmed.github.io',
+    ],
     methods: 'GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization,Accept',
     credentials: true,
   });
 
@@ -21,6 +26,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
+
   await app.listen(process.env.PORT ?? 3000);
 }
 
